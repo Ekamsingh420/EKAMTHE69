@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Quiz: August 15th</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            max-width: 768px; /* max-w-2xl */
+            width: 100%;
+        }
+        .question-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0; /* border-b border-gray-200 */
+        }
+        .question-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .answer-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .answer-option:hover {
+            background-color: #f0f4f8; /* Light hover background */
+        }
+        .answer-option input[type="radio"] {
+            margin-right: 0.75rem;
+        }
+        .correct-answer {
+            background-color: #d1fae5; /* Green-100 */
+            border: 1px solid #34d399; /* Green-400 */
+        }
+        .incorrect-answer {
+            background-color: #fee2e2; /* Red-100 */
+            border: 1px solid #ef4444; /* Red-500 */
+        }
+        .result-text {
+            font-weight: 600; /* font-semibold */
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 text-center">
+            History Quiz: August 15th
+        </h1>
+        <p class="text-center text-gray-600 mb-8">
+            Test your knowledge on historical events that occurred on August 15th!
+        </p>
+
+        <form id="quizForm">
+            <!-- Questions will be dynamically inserted here by JavaScript -->
+        </form>
+
+        <div class="mt-8 text-center">
+            <button id="submitQuiz"
+                    class="inline-flex justify-center py-3 px-8 border border-transparent shadow-sm text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                Submit Quiz
+            </button>
+            <button id="retakeQuiz"
+                    class="hidden inline-flex justify-center py-3 px-8 border border-transparent shadow-sm text-lg font-medium rounded-md text-blue-600 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out ml-4">
+                Retake Quiz
+            </button>
+        </div>
+
+        <div id="results" class="mt-8 p-6 rounded-lg bg-gray-50 border border-gray-200 hidden">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Results</h2>
+            <p class="text-lg text-gray-700 text-center mb-4">You scored <span id="scoreDisplay" class="font-extrabold text-blue-600"></span> out of <span id="totalQuestionsDisplay" class="font-extrabold text-blue-600"></span>.</p>
+            <div id="feedbackContainer">
+                <!-- Individual question feedback will go here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizQuestions = [
+            {
+                question: "Which country gained independence on August 15, 1947?",
+                options: [
+                    "Pakistan",
+                    "India",
+                    "Bangladesh",
+                    "Sri Lanka"
+                ],
+                correctAnswer: "India"
+            },
+            {
+                question: "Who was the first Prime Minister of India?",
+                options: [
+                    "Mahatma Gandhi",
+                    "Sardar Vallabhbhai Patel",
+                    "Jawaharlal Nehru",
+                    "Subhas Chandra Bose"
+                ],
+                correctAnswer: "Jawaharlal Nehru"
+            },
+            {
+                question: "On August 15, 1975, which country's founding father, Sheikh Mujibur Rahman, was assassinated?",
+                options: [
+                    "Pakistan",
+                    "Bangladesh",
+                    "Nepal",
+                    "Bhutan"
+                ],
+                correctAnswer: "Bangladesh"
+            },
+            {
+                question: "Which of these significant historical events happened on August 15, 1914?",
+                options: [
+                    "End of World War I",
+                    "Opening of the Panama Canal",
+                    "Signing of the Treaty of Versailles",
+                    "Beginning of the Russian Revolution"
+                ],
+                correctAnswer: "Opening of the Panama Canal"
+            },
+            {
+                question: "The 'Victory over Japan Day' (V-J Day), marking the end of World War II, is celebrated on August 15th in some countries. What year did this happen?",
+                options: [
+                    "1942",
+                    "1943",
+                    "1944",
+                    "1945"
+                ],
+                correctAnswer: "1945"
+            }
+        ];
+
+        const quizForm = document.getElementById('quizForm');
+        const submitQuizButton = document.getElementById('submitQuiz');
+        const retakeQuizButton = document.getElementById('retakeQuiz');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const totalQuestionsDisplay = document.getElementById('totalQuestionsDisplay');
+        const feedbackContainer = document.getElementById('feedbackContainer');
+
+        function loadQuiz() {
+            quizForm.innerHTML = ''; // Clear previous questions
+            quizQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question-item');
+                questionDiv.innerHTML = `
+                    <p class="text-lg font-semibold text-gray-800 mb-3">${index + 1}. ${q.question}</p>
+                    <div class="options-container">
+                        ${q.options.map((option, optIndex) => `
+                            <label class="answer-option">
+                                <input type="radio" name="question${index}" value="${option}" class="form-radio text-blue-600 h-4 w-4">
+                                <span class="text-gray-700">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${index}" class="mt-2 text-sm"></div>
+                `;
+                quizForm.appendChild(questionDiv);
+            });
+            resultsDiv.classList.add('hidden');
+            submitQuizButton.classList.remove('hidden');
+            retakeQuizButton.classList.add('hidden');
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            feedbackContainer.innerHTML = ''; // Clear previous feedback
+
+            quizQuestions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                const questionItem = document.querySelector(`.question-item:nth-child(${index + 1})`);
+
+                // Remove previous feedback classes
+                questionItem.classList.remove('correct-answer', 'incorrect-answer');
+                feedbackDiv.innerHTML = '';
+
+                if (selectedOption) {
+                    if (selectedOption.value === q.correctAnswer) {
+                        score++;
+                        feedbackDiv.innerHTML = '<span class="text-green-600 result-text">Correct!</span>';
+                        questionItem.classList.add('correct-answer');
+                    } else {
+                        feedbackDiv.innerHTML = `<span class="text-red-600 result-text">Incorrect.</span> The correct answer was: <span class="font-medium">${q.correctAnswer}</span>`;
+                        questionItem.classList.add('incorrect-answer');
+                    }
+                } else {
+                    feedbackDiv.innerHTML = '<span class="text-yellow-600 result-text">No answer selected.</span> The correct answer was: <span class="font-medium">${q.correctAnswer}</span>';
+                    questionItem.classList.add('incorrect-answer'); // Mark as incorrect if not answered
+                }
+            });
+
+            scoreDisplay.textContent = score;
+            totalQuestionsDisplay.textContent = quizQuestions.length;
+            resultsDiv.classList.remove('hidden');
+            submitQuizButton.classList.add('hidden');
+            retakeQuizButton.classList.remove('hidden');
+
+            // Scroll to results
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        submitQuizButton.addEventListener('click', submitQuiz);
+        retakeQuizButton.addEventListener('click', loadQuiz);
+
+        // Load quiz on page load
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>
